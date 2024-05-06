@@ -1,5 +1,6 @@
 #include "Guesser.h"
 #include <string>
+#include <algorithm>
 
 using std::string;
 
@@ -14,8 +15,28 @@ using std::string;
   the secret; in other words, if m_secret has a 10 characters and the guess
   has 100, the distance is 10.
 */
-unsigned int Guesser::distance(string guess){
-  return 0;
+unsigned int Guesser::distance(string guess) {
+  int distance = 0;
+  int min_length = std::min(guess.length(), m_secret.length());
+
+  //checking if guess is an empty string
+  if(guess.length() == 0) {
+    distance = m_secret.length();
+  } else {
+    for (int i = 0; i < min_length; i++) {
+      if(guess[i] != m_secret[i]){
+        distance++;
+      }
+    }
+
+    distance += std::max(m_secret.length(), guess.length()) - min_length;
+  }
+
+  if(distance > m_secret.length()) {
+    distance = m_secret.length();
+  }
+
+  return distance;
 }
 
 /*
@@ -25,7 +46,8 @@ unsigned int Guesser::distance(string guess){
   otherwise, it will be truncated at that length.
 */
 Guesser::Guesser(string secret){
-
+  m_secret = secret.substr(0,32);
+  m_remaining = 3;
 }
 
 /*
@@ -40,7 +62,21 @@ Guesser::Guesser(string secret){
   and the secret.
 */
 bool Guesser::match(string guess){
-  return true;
+  unsigned int dist = Guesser::distance(guess);
+  bool locked = false;
+
+
+  if(m_remaining == 0 || dist > 2 || locked == true) {
+    locked = true;
+    return false;
+  } else {
+    if( guess == m_secret) {
+      m_remaining = 3;
+      return true;
+    } else {
+      m_remaining--;
+    }
+  }
 }
 
 /*
@@ -51,6 +87,6 @@ bool Guesser::match(string guess){
   reset to three (3).
 */
 unsigned int Guesser::remaining(){
-  return 0;
+  return m_remaining;
 }
 

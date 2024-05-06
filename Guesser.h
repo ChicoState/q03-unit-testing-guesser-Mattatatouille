@@ -2,6 +2,7 @@
 #define GUESSER_H
 
 #include <string>
+#include <algorithm>
 
 using std::string;
 
